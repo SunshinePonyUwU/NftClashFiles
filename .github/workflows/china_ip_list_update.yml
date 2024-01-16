@@ -23,6 +23,8 @@ jobs:
         diff --brief china_ip_list_new.txt china_ip_list.txt || diff --brief china_ipv6_list_new.txt china_ipv6_list.txt && {
           echo "Files are the same, exit action"
           echo "name=exit::true" >> $GITHUB_OUTPUT
+        } || {
+          echo "Continue"
         }
     - name: Update China IP List
       if: steps.check_diff.outputs.exit == 'false'
