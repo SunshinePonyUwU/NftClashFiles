@@ -17,28 +17,35 @@ jobs:
         curl -kfSL -o china_ip_list_new.txt https://raw.githubusercontent.com/ChanthMiao/China-IPv4-List/release/cn.txt
         curl -kfSL -o china_ipv6_list_new.txt https://raw.githubusercontent.com/ChanthMiao/China-IPv6-List/release/cn6.txt
     - name: Check file difference
+      id: check_diff
       run: |
         diff --brief china_ip_list_new.txt china_ip_list.txt
         if [ $? -eq 0 ]; then
           echo "Files are the same, exit action"
-          exit 0
+          echo "::set-output name=exit::true"
+        else
+          echo "::set-output name=exit::false"
         fi
     - name: Update China IP List
+      if: steps.check_diff.outputs.exit == 'false'
       run: |
         mv china_ip_list_new.txt china_ip_list.txt
         mv china_ipv6_list_new.txt china_ipv6_list.txt
     - name: Update update.json
+      if: steps.check_diff.outputs.exit == 'false'
       run: |
         version=$(jq -r '.china_ip_version' update.json)
         version=$((version+1))
         jq --argjson v "$version" '.china_ip_version = $v' update.json > update_new.json
         mv update_new.json update.json
     - name: Commit and push
+      if: steps.check_diff.outputs.exit == 'false'
       run: |
         git config --global user.email "sunshine@20percent.cool" && git config --global user.name "Bot"
         git add . && git commit -m "Update China IP List" || exit 0
         git push
     - name: Cleanup Workflow
+      if: steps.check_diff.outputs.exit == 'false'
       uses: Mattraks/delete-workflow-runs@main
       with:
         retain_days: 1
