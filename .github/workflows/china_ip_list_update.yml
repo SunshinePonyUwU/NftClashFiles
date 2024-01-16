@@ -22,9 +22,9 @@ jobs:
         diff --brief china_ip_list_new.txt china_ip_list.txt
         if [ $? -eq 0 ]; then
           echo "Files are the same, exit action"
-          echo "::set-output name=exit::true"
+          echo "name=exit::true" >> $GITHUB_OUTPUT
         else
-          echo "::set-output name=exit::false"
+          echo "name=exit::false" >> $GITHUB_OUTPUT
         fi
     - name: Update China IP List
       if: steps.check_diff.outputs.exit == 'false'
