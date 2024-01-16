@@ -19,13 +19,12 @@ jobs:
     - name: Check file difference
       id: check_diff
       run: |
-        diff --brief china_ip_list_new.txt china_ip_list.txt
-        if [ $? -eq 0 ]; then
+        diff --brief china_ip_list_new.txt china_ip_list.txt || diff --brief china_ipv6_list_new.txt china_ipv6_list.txt && {
           echo "Files are the same, exit action"
           echo "name=exit::true" >> $GITHUB_OUTPUT
-        else
+        } || {
           echo "name=exit::false" >> $GITHUB_OUTPUT
-        fi
+        }
     - name: Update China IP List
       if: steps.check_diff.outputs.exit == 'false'
       run: |
