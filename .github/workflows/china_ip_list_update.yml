@@ -12,10 +12,21 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
+    - name: Download China IP List
+      run: |
+        curl -kfSL -o china_ip_list_new.txt https://raw.githubusercontent.com/ChanthMiao/China-IPv4-List/release/cn.txt
+        curl -kfSL -o china_ipv6_list_new.txt https://raw.githubusercontent.com/ChanthMiao/China-IPv6-List/release/cn6.txt
+    - name: Check file difference
+      run: |
+        diff --brief china_ip_list_new.txt china_ip_list.txt
+        if [ $? -eq 0 ]; then
+          echo "Files are the same, exit action"
+          exit 0
+        fi
     - name: Update China IP List
       run: |
-        curl -kfSL -o china_ip_list.txt https://raw.githubusercontent.com/ChanthMiao/China-IPv4-List/release/cn.txt
-        curl -kfSL -o china_ipv6_list.txt https://raw.githubusercontent.com/ChanthMiao/China-IPv6-List/release/cn6.txt
+        mv china_ip_list_new.txt china_ip_list.txt
+        mv china_ipv6_list_new.txt china_ipv6_list.txt
     - name: Update update.json
       run: |
         version=$(jq -r '.china_ip_version' update.json)
