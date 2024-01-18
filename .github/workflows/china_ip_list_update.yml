@@ -2,7 +2,7 @@ name: china_ip_list_update
 
 on:
   schedule:
-  - cron: 0 7 * * *
+  - cron: 0 15 * * *
   workflow_dispatch:
 
 jobs:
