@@ -38,10 +38,15 @@ jobs:
         version=$((version+1))
         jq --argjson v "$version" '.china_ip_version = $v' update.json > update_new.json
         mv update_new.json update.json
+    - name: Git config
+      if: steps.check_diff.outputs.exit == 'false'
+      run: |
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config user.name "github-actions[bot]"
+        git fetch --unshallow
     - name: Commit and push
       if: steps.check_diff.outputs.exit == 'false'
       run: |
-        git config --global user.email "sunshine@20percent.cool" && git config --global user.name "Bot"
         git add . && git commit -m "Update China IP List" || exit 0
         git push
     - name: Cleanup Workflow
